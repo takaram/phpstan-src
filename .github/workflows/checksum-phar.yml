@@ -12,7 +12,7 @@ on:
       - '.github/workflows/checksum-phar.yml'
   push:
     branches:
-      - "2.0.x"
+      - "2.1.x"
     paths:
       - 'compiler/**'
       - '.github/workflows/checksum-phar.yml'
@@ -34,7 +34,7 @@ jobs:
         with:
           repository: phpstan/phpstan
           path: phpstan-dist
-          ref: 2.0.x
+          ref: 2.1.x
 
       - name: "Get info"
         id: info
@@ -98,14 +98,14 @@ jobs:
       - name: "Composer dump"
         run: "composer install --no-interaction --no-progress"
         env:
-          COMPOSER_ROOT_VERSION: "2.0.x-dev"
+          COMPOSER_ROOT_VERSION: "2.1.x-dev"
 
       - name: "Compile PHAR for checksum"
         working-directory: "compiler/build"
         run: "php box.phar compile --no-parallel"
         env:
           PHAR_CHECKSUM: "1"
-          COMPOSER_ROOT_VERSION: "2.0.x-dev"
+          COMPOSER_ROOT_VERSION: "2.1.x-dev"
 
       - name: "Re-sign PHAR"
         run: "php compiler/build/resign.php tmp/phpstan.phar"
