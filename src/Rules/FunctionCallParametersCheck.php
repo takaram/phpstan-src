@@ -102,8 +102,7 @@ final class FunctionCallParametersCheck
 		$hasNamedArguments = false;
 		$hasUnpackedArgument = false;
 		$errors = [];
-		foreach ($args as $i => $arg) {
-			$type = $scope->getType($arg->value);
+		foreach ($args as $arg) {
 			if ($hasNamedArguments && $arg->unpack) {
 				$errors[] = RuleErrorBuilder::message('Named argument cannot be followed by an unpacked (...) argument.')
 					->identifier('argument.unpackAfterNamed')
@@ -127,6 +126,7 @@ final class FunctionCallParametersCheck
 				$argumentName = $arg->name->toString();
 			}
 			if ($arg->unpack) {
+				$type = $scope->getType($arg->value);
 				$arrays = $type->getConstantArrays();
 				if (count($arrays) > 0) {
 					$maxKeys = null;
@@ -211,7 +211,7 @@ final class FunctionCallParametersCheck
 
 		if (!$hasNamedArguments) {
 			$invokedParametersCount = count($arguments);
-			foreach ($arguments as $i => [$argumentValue, $argumentValueType, $unpack, $argumentName]) {
+			foreach ($arguments as [$argumentValue, $argumentValueType, $unpack, $argumentName]) {
 				if ($unpack) {
 					$invokedParametersCount = max($functionParametersMinCount, $functionParametersMaxCount);
 					break;
