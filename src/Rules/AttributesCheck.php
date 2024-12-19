@@ -152,7 +152,7 @@ final class AttributesCheck
 					'Unknown parameter $%s in call to ' . $attributeClassName . ' constructor.',
 					'Return type of call to ' . $attributeClassName . ' constructor contains unresolvable type.',
 					'%s of attribute class ' . $attributeClassName . ' constructor contains unresolvable type.',
-					'Attribute class ' . $attributeClassName . ' constructorinvoked with %s, but it\'s not allowed because of @no-named-arguments.',
+					'Attribute class ' . $attributeClassName . ' constructor invoked with %s, but it\'s not allowed because of @no-named-arguments.',
 				);
 
 				foreach ($parameterErrors as $error) {
