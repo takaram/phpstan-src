@@ -2,7 +2,6 @@
 
 namespace PHPStan\Rules\Classes;
 
-use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\ClassCaseSensitivityCheck;
 use PHPStan\Rules\ClassForbiddenNameCheck;
 use PHPStan\Rules\ClassNameCheck;
@@ -26,7 +25,7 @@ class InstantiationRuleTest extends RuleTestCase
 		$reflectionProvider = $this->createReflectionProvider();
 		return new InstantiationRule(
 			$reflectionProvider,
-			new FunctionCallParametersCheck(new RuleLevelHelper($reflectionProvider, true, false, true, false, false, false), new NullsafeCheck(), new PhpVersion(80000), new UnresolvableTypeHelper(), new PropertyReflectionFinder(), true, true, true, true),
+			new FunctionCallParametersCheck(new RuleLevelHelper($reflectionProvider, true, false, true, false, false, false), new NullsafeCheck(), new UnresolvableTypeHelper(), new PropertyReflectionFinder(), true, true, true, true),
 			new ClassNameCheck(
 				new ClassCaseSensitivityCheck($reflectionProvider, true),
 				new ClassForbiddenNameCheck(self::getContainer()),
@@ -290,6 +289,10 @@ class InstantiationRuleTest extends RuleTestCase
 
 	public function testNamedArguments(): void
 	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Test requires PHP 8.0');
+		}
+
 		$this->analyse([__DIR__ . '/data/instantiation-named-arguments.php'], [
 			[
 				'Missing parameter $j (int) in call to InstantiationNamedArguments\Foo constructor.',
@@ -501,6 +504,10 @@ class InstantiationRuleTest extends RuleTestCase
 
 	public function testBug11815(): void
 	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Test requires PHP 8.0');
+		}
+
 		$this->analyse([__DIR__ . '/data/bug-11815.php'], []);
 	}
 
