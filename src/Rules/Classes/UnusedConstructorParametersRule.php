@@ -15,7 +15,6 @@ use function array_filter;
 use function array_map;
 use function array_values;
 use function count;
-use function is_string;
 use function sprintf;
 use function strtolower;
 
@@ -56,11 +55,11 @@ final class UnusedConstructorParametersRule implements Rule
 
 		return $this->check->getUnusedParameters(
 			$scope,
-			array_map(static function (Param $parameter): string {
-				if (!$parameter->var instanceof Variable || !is_string($parameter->var->name)) {
+			array_map(static function (Param $parameter): Variable {
+				if (!$parameter->var instanceof Variable) {
 					throw new ShouldNotHappenException();
 				}
-				return $parameter->var->name;
+				return $parameter->var;
 			}, array_values(array_filter($originalNode->params, static fn (Param $parameter): bool => $parameter->flags === 0))),
 			$originalNode->stmts,
 			$message,

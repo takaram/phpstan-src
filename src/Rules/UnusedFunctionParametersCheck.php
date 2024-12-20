@@ -3,11 +3,13 @@
 namespace PHPStan\Rules;
 
 use PhpParser\Node;
+use PhpParser\Node\Expr\Variable;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\ReflectionProvider;
+use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantStringType;
-use function array_fill_keys;
-use function array_keys;
+use function array_combine;
+use function array_map;
 use function array_merge;
 use function is_array;
 use function is_string;
@@ -16,25 +18,34 @@ use function sprintf;
 final class UnusedFunctionParametersCheck
 {
 
-	public function __construct(private ReflectionProvider $reflectionProvider)
+	public function __construct(
+		private ReflectionProvider $reflectionProvider,
+		private bool $reportExactLine,
+	)
 	{
 	}
 
 	/**
-	 * @param string[] $parameterNames
+	 * @param Variable[] $parameterVars
 	 * @param Node[] $statements
 	 * @param 'constructor.unusedParameter'|'closure.unusedUse' $identifier
 	 * @return list<IdentifierRuleError>
 	 */
 	public function getUnusedParameters(
 		Scope $scope,
-		array $parameterNames,
+		array $parameterVars,
 		array $statements,
 		string $unusedParameterMessage,
 		string $identifier,
 	): array
 	{
-		$unusedParameters = array_fill_keys($parameterNames, true);
+		$parameterNames = array_map(static function (Variable $variable): string {
+			if (!is_string($variable->name)) {
+				throw new ShouldNotHappenException();
+			}
+			return $variable->name;
+		}, $parameterVars);
+		$unusedParameters = array_combine($parameterNames, $parameterVars);
 		foreach ($this->getUsedVariables($scope, $statements) as $variableName) {
 			if (!isset($unusedParameters[$variableName])) {
 				continue;
@@ -43,10 +54,12 @@ final class UnusedFunctionParametersCheck
 			unset($unusedParameters[$variableName]);
 		}
 		$errors = [];
-		foreach (array_keys($unusedParameters) as $name) {
-			$errors[] = RuleErrorBuilder::message(
-				sprintf($unusedParameterMessage, $name),
-			)->identifier($identifier)->build();
+		foreach ($unusedParameters as $name => $variable) {
+			$errorBuilder = RuleErrorBuilder::message(sprintf($unusedParameterMessage, $name))->identifier($identifier);
+			if ($this->reportExactLine) {
+				$errorBuilder->line($variable->getStartLine());
+			}
+			$errors[] = $errorBuilder->build();
 		}
 
 		return $errors;
@@ -66,7 +79,7 @@ final class UnusedFunctionParametersCheck
 					return $scope->getDefinedVariables();
 				}
 			}
-			if ($node instanceof Node\Expr\Variable && is_string($node->name) && $node->name !== 'this') {
+			if ($node instanceof Variable && is_string($node->name) && $node->name !== 'this') {
 				return [$node->name];
 			}
 			if ($node instanceof Node\ClosureUse && is_string($node->var->name)) {

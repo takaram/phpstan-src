@@ -4,3 +4,4 @@ parameters:
 		checkParameterCastableToNumberFunctions: true
 		skipCheckGenericClasses!: []
 		stricterFunctionMap: true
+		reportPreciseLineForUnusedFunctionParameter: true

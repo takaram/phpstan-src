@@ -6,10 +6,8 @@ use PhpParser\Node;
 use PHPStan\Analyser\Scope;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\UnusedFunctionParametersCheck;
-use PHPStan\ShouldNotHappenException;
 use function array_map;
 use function count;
-use function is_string;
 
 /**
  * @implements Rule<Node\Expr\Closure>
@@ -34,12 +32,7 @@ final class UnusedClosureUsesRule implements Rule
 
 		return $this->check->getUnusedParameters(
 			$scope,
-			array_map(static function (Node\ClosureUse $use): string {
-				if (!is_string($use->var->name)) {
-					throw new ShouldNotHappenException();
-				}
-				return $use->var->name;
-			}, $node->uses),
+			array_map(static fn (Node\ClosureUse $use): Node\Expr\Variable => $use->var, $node->uses),
 			$node->stmts,
 			'Anonymous function has an unused use $%s.',
 			'closure.unusedUse',
