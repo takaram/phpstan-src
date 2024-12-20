@@ -5,11 +5,12 @@ namespace PHPStan\Rules\Functions;
 use Attribute;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Node\InArrowFunctionNode;
 use PHPStan\Rules\AttributesCheck;
 use PHPStan\Rules\Rule;
 
 /**
- * @implements Rule<Node\Expr\ArrowFunction>
+ * @implements Rule<InArrowFunctionNode>
  */
 final class ArrowFunctionAttributesRule implements Rule
 {
@@ -20,14 +21,14 @@ final class ArrowFunctionAttributesRule implements Rule
 
 	public function getNodeType(): string
 	{
-		return Node\Expr\ArrowFunction::class;
+		return InArrowFunctionNode::class;
 	}
 
 	public function processNode(Node $node, Scope $scope): array
 	{
 		return $this->attributesCheck->check(
 			$scope,
-			$node->attrGroups,
+			$node->getOriginalNode()->attrGroups,
 			Attribute::TARGET_FUNCTION,
 			'function',
 		);

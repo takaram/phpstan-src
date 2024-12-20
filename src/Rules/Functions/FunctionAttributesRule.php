@@ -5,11 +5,12 @@ namespace PHPStan\Rules\Functions;
 use Attribute;
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Node\InFunctionNode;
 use PHPStan\Rules\AttributesCheck;
 use PHPStan\Rules\Rule;
 
 /**
- * @implements Rule<Node\Stmt\Function_>
+ * @implements Rule<InFunctionNode>
  */
 final class FunctionAttributesRule implements Rule
 {
@@ -20,14 +21,14 @@ final class FunctionAttributesRule implements Rule
 
 	public function getNodeType(): string
 	{
-		return Node\Stmt\Function_::class;
+		return InFunctionNode::class;
 	}
 
 	public function processNode(Node $node, Scope $scope): array
 	{
 		return $this->attributesCheck->check(
 			$scope,
-			$node->attrGroups,
+			$node->getOriginalNode()->attrGroups,
 			Attribute::TARGET_FUNCTION,
 			'function',
 		);
