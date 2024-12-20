@@ -2,7 +2,6 @@
 
 namespace PHPStan\Rules\Traits;
 
-use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\AttributesCheck;
 use PHPStan\Rules\ClassCaseSensitivityCheck;
 use PHPStan\Rules\ClassForbiddenNameCheck;
@@ -35,7 +34,6 @@ class TraitAttributesRuleTest extends RuleTestCase
 				new FunctionCallParametersCheck(
 					new RuleLevelHelper($reflectionProvider, true, false, true, $this->checkExplicitMixed, $this->checkImplicitMixed, false),
 					new NullsafeCheck(),
-					new PhpVersion(80000),
 					new UnresolvableTypeHelper(),
 					new PropertyReflectionFinder(),
 					true,
@@ -54,6 +52,10 @@ class TraitAttributesRuleTest extends RuleTestCase
 
 	public function testRule(): void
 	{
+		if (PHP_VERSION_ID < 80000) {
+			$this->markTestSkipped('Test requires PHP 8.0.');
+		}
+
 		$this->analyse([__DIR__ . '/data/trait-attributes.php'], [
 			[
 				'Attribute class TraitAttributes\AbstractAttribute is abstract.',
@@ -85,6 +87,10 @@ class TraitAttributesRuleTest extends RuleTestCase
 
 	public function testBug12281(): void
 	{
+		if (PHP_VERSION_ID < 80100) {
+			$this->markTestSkipped('Test requires PHP 8.1.');
+		}
+
 		$this->analyse([__DIR__ . '/data/bug-12281.php'], [
 			[
 				'Attribute class AllowDynamicProperties cannot be used with trait.',
