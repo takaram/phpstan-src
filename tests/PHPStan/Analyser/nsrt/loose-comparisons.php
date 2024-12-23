@@ -653,4 +653,108 @@ class HelloWorld
 
 	}
 
+	/**
+	 * @param true|1|"1" $looseOne
+	 * @param false|0|"0" $looseZero
+	 * @param false|1 $constMix
+	 */
+	public function sayConstUnion(
+		$looseOne,
+		$looseZero,
+		$constMix
+	): void
+	{
+		assertType('true', $looseOne == 1);
+		assertType('false', $looseOne == 0);
+		assertType('true', $looseOne == true);
+		assertType('false', $looseOne == false);
+		assertType('true', $looseOne == "1");
+		assertType('false', $looseOne == "0");
+		assertType('false', $looseOne == []);
+
+		assertType('false', $looseZero == 1);
+		assertType('true', $looseZero == 0);
+		assertType('false', $looseZero == true);
+		assertType('true', $looseZero == false);
+		assertType('false', $looseZero == "1");
+		assertType('true', $looseZero == "0");
+		assertType('bool', $looseZero == []);
+
+		assertType('bool', $constMix == 0);
+		assertType('bool', $constMix == 1);
+		assertType('bool', $constMix == true);
+		assertType('bool', $constMix == false);
+		assertType('bool', $constMix == "1");
+		assertType('bool', $constMix == "0");
+		assertType('bool', $constMix == []);
+
+		assertType('true', $looseOne == $looseOne);
+		assertType('true', $looseZero == $looseZero);
+		assertType('false', $looseOne == $looseZero);
+		assertType('false', $looseZero == $looseOne);
+		assertType('bool', $looseOne == $constMix);
+		assertType('bool', $constMix == $looseOne);
+		assertType('bool', $looseZero == $constMix);
+		assertType('bool', $constMix == $looseZero);
+	}
+
+	/**
+	 * @param uppercase-string $upper
+	 * @param lowercase-string $lower
+	 * @param array{} $emptyArr
+	 * @param non-empty-array $nonEmptyArr
+	 * @param int<10, 20> $intRange
+	 */
+	public function sayIntersection(
+		string $upper,
+		string $lower,
+		string $s,
+		array $emptyArr,
+		array $nonEmptyArr,
+		array $arr,
+		int $i,
+		int $intRange,
+	): void
+	{
+		// https://3v4l.org/q8OP2
+		assertType('true', '1e2' == '1E2');
+		assertType('false', '1e2' === '1E2');
+
+		assertType('bool', '' == $upper);
+		assertType('bool', '0' == $upper);
+		assertType('false', 'a' == $upper);
+		assertType('false', 'abc' == $upper);
+		assertType('false', 'aBc' == $upper);
+		assertType('bool', '1e2' == $upper);
+		assertType('bool', strtoupper($s) == $upper);
+		assertType('bool', strtolower($s) == $upper);
+		assertType('bool', $upper == $lower);
+
+		assertType('bool', '0' == $lower);
+		assertType('false', 'A' == $lower);
+		assertType('false', 'ABC' == $lower);
+		assertType('false', 'AbC' == $lower);
+		assertType('bool', '1E2' == $lower);
+		assertType('bool', strtoupper($s) == $lower);
+		assertType('bool', strtolower($s) == $lower);
+		assertType('bool', $lower == $upper);
+
+		assertType('false', $arr == $i);
+		assertType('false', $nonEmptyArr == $i);
+		assertType('false', $arr == $intRange);
+		assertType('false', $nonEmptyArr == $intRange);
+		assertType('bool', $emptyArr == $nonEmptyArr); // should be false
+		assertType('false', $nonEmptyArr == $emptyArr);
+		assertType('bool', $arr == $nonEmptyArr);
+		assertType('bool', $nonEmptyArr == $arr);
+
+		assertType('bool', '' == $lower);
+		if ($lower != '') {
+			assertType('false', '' == $lower);
+		}
+		if ($upper != '') {
+			assertType('false', '' == $upper);
+		}
+	}
+
 }

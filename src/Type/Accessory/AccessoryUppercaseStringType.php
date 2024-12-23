@@ -11,6 +11,7 @@ use PHPStan\Type\BenevolentUnionType;
 use PHPStan\Type\BooleanType;
 use PHPStan\Type\CompoundType;
 use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\Constant\ConstantBooleanType;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\FloatType;
@@ -326,6 +327,14 @@ class AccessoryUppercaseStringType implements CompoundType, AccessoryType
 
 	public function looseCompare(Type $type, PhpVersion $phpVersion): BooleanType
 	{
+		if (
+			$type->isString()->yes()
+			&& $type->isUppercaseString()->no()
+			&& ($type->isNumericString()->no() || $this->isNumericString()->no())
+		) {
+			return new ConstantBooleanType(false);
+		}
+
 		return new BooleanType();
 	}
 
