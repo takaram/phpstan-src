@@ -2993,7 +2993,7 @@ final class NodeScopeResolver
 				$propertyName = $expr->name->toString();
 				$propertyHolderType = $scopeBeforeVar->getType($expr->var);
 				$propertyReflection = $scopeBeforeVar->getPropertyReflection($propertyHolderType, $propertyName);
-				if ($propertyReflection !== null) {
+				if ($propertyReflection !== null && $this->phpVersion->supportsPropertyHooks()) {
 					$propertyDeclaringClass = $propertyReflection->getDeclaringClass();
 					if ($propertyDeclaringClass->hasNativeProperty($propertyName)) {
 						$nativeProperty = $propertyDeclaringClass->getNativeProperty($propertyName);
