@@ -48,6 +48,10 @@ class AccessStaticPropertiesRuleTest extends RuleTestCase
 				26,
 			],
 			[
+				'Static access to instance property FooAccessStaticProperties::$loremIpsum.',
+				32,
+			],
+			[
 				'IpsumAccessStaticProperties::ipsum() accesses parent::$lorem but IpsumAccessStaticProperties does not extend any class.',
 				42,
 			],
@@ -249,6 +253,14 @@ class AccessStaticPropertiesRuleTest extends RuleTestCase
 			[
 				'Access to an undefined static property AllowsDynamicProperties::$foo.',
 				248,
+			],
+			[
+				'Static access to instance property ParentClassWithInstanceProperty::$i.',
+				267,
+			],
+			[
+				'Access to an undefined static property ParentClassWithInstanceProperty::$j.',
+				268,
 			],
 		]);
 	}

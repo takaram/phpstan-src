@@ -15,7 +15,6 @@ use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use PHPStan\Rules\RuleLevelHelper;
-use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\ErrorType;
 use PHPStan\Type\StringType;
@@ -106,16 +105,6 @@ final class AccessStaticPropertiesRule implements Rule
 							$scope->getClassReflection()->getDisplayName(),
 						))->identifier('class.noParent')->build(),
 					];
-				}
-
-				if ($scope->getFunctionName() === null) {
-					throw new ShouldNotHappenException();
-				}
-
-				$currentMethodReflection = $scope->getClassReflection()->getNativeMethod($scope->getFunctionName());
-				if (!$currentMethodReflection->isStatic()) {
-					// calling parent::method() from instance method
-					return [];
 				}
 
 				$classType = $scope->resolveTypeByName($node->class);

@@ -251,3 +251,21 @@ class AllowsDynamicProperties
 	}
 
 }
+
+class ParentClassWithInstanceProperty
+{
+
+	public int $i = 0;
+
+}
+
+class ChildClassAccessingParentProperty extends ParentClassWithInstanceProperty
+{
+
+	public function doFoo(): void
+	{
+		echo parent::$i;
+		echo parent::$j;
+	}
+
+}
