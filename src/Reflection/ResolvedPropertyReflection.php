@@ -173,4 +173,14 @@ final class ResolvedPropertyReflection implements WrapperPropertyReflection
 		);
 	}
 
+	public function isProtectedSet(): bool
+	{
+		return $this->reflection->isProtectedSet();
+	}
+
+	public function isPrivateSet(): bool
+	{
+		return $this->reflection->isPrivateSet();
+	}
+
 }

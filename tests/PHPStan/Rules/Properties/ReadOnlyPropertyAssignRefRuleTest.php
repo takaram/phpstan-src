@@ -23,7 +23,7 @@ class ReadOnlyPropertyAssignRefRuleTest extends RuleTestCase
 			$this->markTestSkipped('Test requires PHP 8.1.');
 		}
 
-		$this->analyse([__DIR__ . '/data/readonly-assign-ref.php'], [
+		$errors = [
 			[
 				'Readonly property ReadOnlyPropertyAssignRef\Foo::$foo is assigned by reference.',
 				14,
@@ -32,11 +32,17 @@ class ReadOnlyPropertyAssignRefRuleTest extends RuleTestCase
 				'Readonly property ReadOnlyPropertyAssignRef\Foo::$bar is assigned by reference.',
 				15,
 			],
-			[
+		];
+
+		if (PHP_VERSION_ID < 80400) {
+			// reported by PropertyAssignRefRule on 8.4+
+			$errors[] = [
 				'Readonly property ReadOnlyPropertyAssignRef\Foo::$bar is assigned by reference.',
 				26,
-			],
-		]);
+			];
+		}
+
+		$this->analyse([__DIR__ . '/data/readonly-assign-ref.php'], $errors);
 	}
 
 }

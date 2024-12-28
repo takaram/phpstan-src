@@ -54,7 +54,7 @@ final class ReadingWriteOnlyPropertiesRule implements Rule
 		if ($propertyReflection === null) {
 			return [];
 		}
-		if (!$scope->canAccessProperty($propertyReflection)) {
+		if (!$scope->canReadProperty($propertyReflection)) {
 			return [];
 		}
 

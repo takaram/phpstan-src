@@ -111,4 +111,14 @@ final class ChangedTypePropertyReflection implements WrapperPropertyReflection
 		return $this->reflection->getHook($hookType);
 	}
 
+	public function isProtectedSet(): bool
+	{
+		return $this->reflection->isProtectedSet();
+	}
+
+	public function isPrivateSet(): bool
+	{
+		return $this->reflection->isPrivateSet();
+	}
+
 }

@@ -103,4 +103,14 @@ final class WrappedExtendedPropertyReflection implements ExtendedPropertyReflect
 		throw new ShouldNotHappenException();
 	}
 
+	public function isProtectedSet(): bool
+	{
+		return false;
+	}
+
+	public function isPrivateSet(): bool
+	{
+		return false;
+	}
+
 }

@@ -13,7 +13,14 @@ interface ClassMemberAccessAnswerer
 
 	public function getClassReflection(): ?ClassReflection;
 
+	/**
+	 * @deprecated Use canReadProperty() or canWriteProperty()
+	 */
 	public function canAccessProperty(PropertyReflection $propertyReflection): bool;
+
+	public function canReadProperty(ExtendedPropertyReflection $propertyReflection): bool;
+
+	public function canWriteProperty(ExtendedPropertyReflection $propertyReflection): bool;
 
 	public function canCallMethod(MethodReflection $methodReflection): bool;
 

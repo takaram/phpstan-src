@@ -184,7 +184,7 @@ final class AccessStaticPropertiesRule implements Rule
 
 				while ($parentClassReflection !== null) {
 					if ($parentClassReflection->hasProperty($name)) {
-						if ($scope->canAccessProperty($parentClassReflection->getProperty($name, $scope))) {
+						if ($scope->canReadProperty($parentClassReflection->getProperty($name, $scope))) {
 							return [];
 						}
 						return [
@@ -227,7 +227,7 @@ final class AccessStaticPropertiesRule implements Rule
 			]);
 		}
 
-		if (!$scope->canAccessProperty($property)) {
+		if (!$scope->canReadProperty($property)) {
 			return array_merge($messages, [
 				RuleErrorBuilder::message(sprintf(
 					'Access to %s property $%s of class %s.',

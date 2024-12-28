@@ -4,6 +4,7 @@ namespace PHPStan\Rules\Properties;
 
 use PhpParser\Node;
 use PHPStan\Analyser\Scope;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
 use function sprintf;
@@ -11,10 +12,13 @@ use function sprintf;
 /**
  * @implements Rule<Node\Expr\AssignRef>
  */
-final class ReadOnlyByPhpDocPropertyAssignRefRule implements Rule
+final class PropertyAssignRefRule implements Rule
 {
 
-	public function __construct(private PropertyReflectionFinder $propertyReflectionFinder)
+	public function __construct(
+		private PhpVersion $phpVersion,
+		private PropertyReflectionFinder $propertyReflectionFinder,
+	)
 	{
 	}
 
@@ -25,7 +29,11 @@ final class ReadOnlyByPhpDocPropertyAssignRefRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if (!$node->expr instanceof Node\Expr\PropertyFetch && !$node->expr instanceof Node\Expr\StaticPropertyFetch) {
+		if (!$this->phpVersion->supportsAsymmetricVisibility()) {
+			return [];
+		}
+
+		if (!$node->expr instanceof Node\Expr\PropertyFetch) {
 			return [];
 		}
 
@@ -38,16 +46,22 @@ final class ReadOnlyByPhpDocPropertyAssignRefRule implements Rule
 			if ($nativeReflection === null) {
 				continue;
 			}
-			if (!$scope->canWriteProperty($propertyReflection)) {
-				continue;
-			}
-			if (!$nativeReflection->isReadOnlyByPhpDoc() || $nativeReflection->isReadOnly()) {
+			if ($scope->canWriteProperty($propertyReflection)) {
 				continue;
 			}
 
 			$declaringClass = $nativeReflection->getDeclaringClass();
-			$errors[] = RuleErrorBuilder::message(sprintf('@readonly property %s::$%s is assigned by reference.', $declaringClass->getDisplayName(), $propertyReflection->getName()))
-				->identifier('property.readOnlyByPhpDocAssignByRef')
+			$errors[] = RuleErrorBuilder::message(sprintf(
+				'Property %s::$%s with %s visibility is assigned by reference.',
+				$declaringClass->getDisplayName(),
+				$propertyReflection->getName(),
+				$propertyReflection->isPrivateSet() ? 'private(set)' : (
+					$propertyReflection->isProtectedSet() ? 'protected(set)' : (
+						$propertyReflection->isPrivate() ? 'private' : 'protected'
+					)
+				),
+			))
+				->identifier('property.assignByRef')
 				->build();
 		}
 

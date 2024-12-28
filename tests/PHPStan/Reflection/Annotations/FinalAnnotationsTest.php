@@ -48,6 +48,8 @@ class FinalAnnotationsTest extends PHPStanTestCase
 		$scope->method('isInClass')->willReturn(true);
 		$scope->method('getClassReflection')->willReturn($class);
 		$scope->method('canAccessProperty')->willReturn(true);
+		$scope->method('canReadProperty')->willReturn(true);
+		$scope->method('canWriteProperty')->willReturn(true);
 
 		$this->assertSame($final, $class->isFinal());
 

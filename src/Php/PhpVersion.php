@@ -357,6 +357,11 @@ final class PhpVersion
 		return $this->versionId >= 80400;
 	}
 
+	public function supportsAsymmetricVisibility(): bool
+	{
+		return $this->versionId >= 80400;
+	}
+
 	public function hasDateTimeExceptions(): bool
 	{
 		return $this->versionId >= 80300;

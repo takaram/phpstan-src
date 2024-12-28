@@ -5381,10 +5381,65 @@ final class MutatingScope implements Scope
 		return $depth;
 	}
 
-	/** @api */
+	/**
+	 * @api
+	 * @deprecated Use canReadProperty() or canWriteProperty()
+	 */
 	public function canAccessProperty(PropertyReflection $propertyReflection): bool
 	{
 		return $this->canAccessClassMember($propertyReflection);
+	}
+
+	/** @api */
+	public function canReadProperty(ExtendedPropertyReflection $propertyReflection): bool
+	{
+		return $this->canAccessClassMember($propertyReflection);
+	}
+
+	/** @api */
+	public function canWriteProperty(ExtendedPropertyReflection $propertyReflection): bool
+	{
+		if (!$propertyReflection->isPrivateSet() && !$propertyReflection->isProtectedSet()) {
+			return $this->canAccessClassMember($propertyReflection);
+		}
+
+		if (!$this->phpVersion->supportsAsymmetricVisibility()) {
+			return $this->canAccessClassMember($propertyReflection);
+		}
+
+		$classReflectionName = $propertyReflection->getDeclaringClass()->getName();
+		$canAccessClassMember = static function (ClassReflection $classReflection) use ($propertyReflection, $classReflectionName) {
+			if ($propertyReflection->isPrivateSet()) {
+				return $classReflection->getName() === $classReflectionName;
+			}
+
+			// protected set
+
+			if (
+				$classReflection->getName() === $classReflectionName
+				|| $classReflection->isSubclassOf($classReflectionName)
+			) {
+				return true;
+			}
+
+			return $propertyReflection->getDeclaringClass()->isSubclassOf($classReflection->getName());
+		};
+
+		foreach ($this->inClosureBindScopeClasses as $inClosureBindScopeClass) {
+			if (!$this->reflectionProvider->hasClass($inClosureBindScopeClass)) {
+				continue;
+			}
+
+			if ($canAccessClassMember($this->reflectionProvider->getClass($inClosureBindScopeClass))) {
+				return true;
+			}
+		}
+
+		if ($this->isInClass()) {
+			return $canAccessClassMember($this->getClassReflection());
+		}
+
+		return false;
 	}
 
 	/** @api */

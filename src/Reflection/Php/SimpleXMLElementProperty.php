@@ -120,4 +120,14 @@ final class SimpleXMLElementProperty implements ExtendedPropertyReflection
 		throw new ShouldNotHappenException();
 	}
 
+	public function isProtectedSet(): bool
+	{
+		return false;
+	}
+
+	public function isPrivateSet(): bool
+	{
+		return false;
+	}
+
 }

@@ -153,4 +153,14 @@ final class FoundPropertyReflection implements ExtendedPropertyReflection
 		return $this->originalPropertyReflection->getHook($hookType);
 	}
 
+	public function isProtectedSet(): bool
+	{
+		return $this->originalPropertyReflection->isProtectedSet();
+	}
+
+	public function isPrivateSet(): bool
+	{
+		return $this->originalPropertyReflection->isPrivateSet();
+	}
+
 }

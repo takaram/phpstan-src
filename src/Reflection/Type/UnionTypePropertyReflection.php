@@ -160,4 +160,14 @@ final class UnionTypePropertyReflection implements ExtendedPropertyReflection
 		return new UnionTypeMethodReflection($hooks[0]->getName(), $hooks);
 	}
 
+	public function isProtectedSet(): bool
+	{
+		return $this->computeResult(static fn (ExtendedPropertyReflection $property) => $property->isProtectedSet());
+	}
+
+	public function isPrivateSet(): bool
+	{
+		return $this->computeResult(static fn (ExtendedPropertyReflection $property) => $property->isPrivateSet());
+	}
+
 }

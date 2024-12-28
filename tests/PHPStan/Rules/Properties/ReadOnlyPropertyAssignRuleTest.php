@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Properties;
 use PHPStan\Reflection\ConstructorsHelper;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
+use function array_merge;
 use const PHP_VERSION_ID;
 
 /**
@@ -32,7 +33,7 @@ class ReadOnlyPropertyAssignRuleTest extends RuleTestCase
 			self::markTestSkipped('Test requires PHP 8.1');
 		}
 
-		$this->analyse([__DIR__ . '/data/readonly-assign.php'], [
+		$errors = [
 			[
 				'Readonly property ReadonlyPropertyAssign\Foo::$foo is assigned outside of the constructor.',
 				21,
@@ -49,10 +50,17 @@ class ReadOnlyPropertyAssignRuleTest extends RuleTestCase
 				'Readonly property ReadonlyPropertyAssign\Foo::$bar is assigned outside of its declaring class.',
 				39,
 			],
-			[
+		];
+
+		if (PHP_VERSION_ID < 80400) {
+			// reported by AccessPropertiesInAssignRule on 8.4+
+			$errors[] = [
 				'Readonly property ReadonlyPropertyAssign\Foo::$baz is assigned outside of its declaring class.',
 				46,
-			],
+			];
+		}
+
+		$errors = array_merge($errors, [
 			[
 				'Readonly property ReadonlyPropertyAssign\FooArrays::$details is assigned outside of the constructor.',
 				64,
@@ -101,15 +109,21 @@ class ReadOnlyPropertyAssignRuleTest extends RuleTestCase
 				'Readonly property ReadonlyPropertyAssign\FooEnum::$value is assigned outside of its declaring class.',
 				152,
 			],*/
-			[
+		]);
+
+		if (PHP_VERSION_ID < 80400) {
+			// reported by AccessPropertiesInAssignRule on 8.4+
+			$errors[] = [
 				'Readonly property ReadonlyPropertyAssign\Foo::$baz is assigned outside of its declaring class.',
 				162,
-			],
-			[
+			];
+			$errors[] = [
 				'Readonly property ReadonlyPropertyAssign\Foo::$baz is assigned outside of its declaring class.',
 				163,
-			],
-		]);
+			];
+		}
+
+		$this->analyse([__DIR__ . '/data/readonly-assign.php'], $errors);
 	}
 
 	public function testFeature7648(): void

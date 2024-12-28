@@ -41,4 +41,8 @@ interface ExtendedPropertyReflection extends PropertyReflection
 	 */
 	public function getHook(string $hookType): ExtendedMethodReflection;
 
+	public function isProtectedSet(): bool;
+
+	public function isPrivateSet(): bool;
+
 }

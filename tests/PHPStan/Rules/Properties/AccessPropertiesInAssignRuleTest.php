@@ -2,9 +2,11 @@
 
 namespace PHPStan\Rules\Properties;
 
+use PHPStan\Php\PhpVersion;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleLevelHelper;
 use PHPStan\Testing\RuleTestCase;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<AccessPropertiesInAssignRule>
@@ -16,7 +18,7 @@ class AccessPropertiesInAssignRuleTest extends RuleTestCase
 	{
 		$reflectionProvider = $this->createReflectionProvider();
 		return new AccessPropertiesInAssignRule(
-			new AccessPropertiesCheck($reflectionProvider, new RuleLevelHelper($reflectionProvider, true, false, true, false, false, false), true, true),
+			new AccessPropertiesCheck($reflectionProvider, new RuleLevelHelper($reflectionProvider, true, false, true, false, false, false), new PhpVersion(PHP_VERSION_ID), true, true),
 		);
 	}
 
@@ -118,6 +120,44 @@ class AccessPropertiesInAssignRuleTest extends RuleTestCase
 	public function testBug10477(): void
 	{
 		$this->analyse([__DIR__ . '/../../Analyser/nsrt/bug-10477.php'], []);
+	}
+
+	public function testAsymmetricVisibility(): void
+	{
+		if (PHP_VERSION_ID < 80400) {
+			$this->markTestSkipped('Test requires PHP 8.4.');
+		}
+
+		$this->analyse([__DIR__ . '/data/write-asymmetric-visibility.php'], [
+			[
+				'Assign to private(set) property $this(WriteAsymmetricVisibility\Bar)::$a.',
+				26,
+			],
+			[
+				'Assign to private(set) property WriteAsymmetricVisibility\Foo::$a.',
+				34,
+			],
+			[
+				'Assign to protected(set) property WriteAsymmetricVisibility\Foo::$b.',
+				35,
+			],
+			[
+				'Access to private property $c of parent class WriteAsymmetricVisibility\ReadonlyProps.',
+				64,
+			],
+			[
+				'Assign to protected(set) property WriteAsymmetricVisibility\ReadonlyProps::$a.',
+				70,
+			],
+			[
+				'Assign to protected(set) property WriteAsymmetricVisibility\ReadonlyProps::$b.',
+				71,
+			],
+			[
+				'Assign to private(set) property WriteAsymmetricVisibility\ReadonlyProps::$c.',
+				72,
+			],
+		]);
 	}
 
 }

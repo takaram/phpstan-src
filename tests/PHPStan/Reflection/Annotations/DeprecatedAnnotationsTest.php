@@ -99,6 +99,8 @@ class DeprecatedAnnotationsTest extends PHPStanTestCase
 		$scope->method('isInClass')->willReturn(true);
 		$scope->method('getClassReflection')->willReturn($class);
 		$scope->method('canAccessProperty')->willReturn(true);
+		$scope->method('canReadProperty')->willReturn(true);
+		$scope->method('canWriteProperty')->willReturn(true);
 
 		$this->assertSame($deprecated, $class->isDeprecated());
 		$this->assertSame($classDeprecation, $class->getDeprecatedDescription());

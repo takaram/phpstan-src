@@ -8,6 +8,7 @@ use PhpParser\Node\Identifier;
 use PHPStan\Analyser\NullsafeOperatorHelper;
 use PHPStan\Analyser\Scope;
 use PHPStan\Internal\SprintfHelper;
+use PHPStan\Php\PhpVersion;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -28,6 +29,7 @@ final class AccessPropertiesCheck
 	public function __construct(
 		private ReflectionProvider $reflectionProvider,
 		private RuleLevelHelper $ruleLevelHelper,
+		private PhpVersion $phpVersion,
 		private bool $reportMagicProperties,
 		private bool $checkDynamicProperties,
 	)
@@ -37,7 +39,7 @@ final class AccessPropertiesCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	public function check(PropertyFetch $node, Scope $scope): array
+	public function check(PropertyFetch $node, Scope $scope, bool $write): array
 	{
 		if ($node->name instanceof Identifier) {
 			$names = [$node->name->name];
@@ -47,7 +49,7 @@ final class AccessPropertiesCheck
 
 		$errors = [];
 		foreach ($names as $name) {
-			$errors = array_merge($errors, $this->processSingleProperty($scope, $node, $name));
+			$errors = array_merge($errors, $this->processSingleProperty($scope, $node, $name, $write));
 		}
 
 		return $errors;
@@ -56,7 +58,7 @@ final class AccessPropertiesCheck
 	/**
 	 * @return list<IdentifierRuleError>
 	 */
-	private function processSingleProperty(Scope $scope, PropertyFetch $node, string $name): array
+	private function processSingleProperty(Scope $scope, PropertyFetch $node, string $name, bool $write): array
 	{
 		$typeResult = $this->ruleLevelHelper->findTypeToCheck(
 			$scope,
@@ -120,9 +122,14 @@ final class AccessPropertiesCheck
 				$parentClassReflection = $propertyClassReflection->getParentClass();
 				while ($parentClassReflection !== null) {
 					if ($parentClassReflection->hasProperty($name)) {
-						if ($scope->canAccessProperty($parentClassReflection->getProperty($name, $scope))) {
+						if ($write) {
+							if ($scope->canWriteProperty($parentClassReflection->getProperty($name, $scope))) {
+								return [];
+							}
+						} elseif ($scope->canReadProperty($parentClassReflection->getProperty($name, $scope))) {
 							return [];
 						}
+
 						return [
 							RuleErrorBuilder::message(sprintf(
 								'Access to private property $%s of parent class %s.',
@@ -153,7 +160,19 @@ final class AccessPropertiesCheck
 		}
 
 		$propertyReflection = $type->getProperty($name, $scope);
-		if (!$scope->canAccessProperty($propertyReflection)) {
+		if ($write) {
+			if ($scope->canWriteProperty($propertyReflection)) {
+				return [];
+			}
+		} elseif ($scope->canReadProperty($propertyReflection)) {
+			return [];
+		}
+
+		if (
+			!$this->phpVersion->supportsAsymmetricVisibility()
+			|| !$write
+			|| (!$propertyReflection->isPrivateSet() && !$propertyReflection->isProtectedSet())
+		) {
 			return [
 				RuleErrorBuilder::message(sprintf(
 					'Access to %s property %s::$%s.',
@@ -164,7 +183,14 @@ final class AccessPropertiesCheck
 			];
 		}
 
-		return [];
+		return [
+			RuleErrorBuilder::message(sprintf(
+				'Assign to %s property %s::$%s.',
+				$propertyReflection->isPrivateSet() ? 'private(set)' : 'protected(set)',
+				$type->describe(VerbosityLevel::typeOnly()),
+				$name,
+			))->identifier(sprintf('assign.property%s', $propertyReflection->isPrivateSet() ? 'PrivateSet' : 'ProtectedSet'))->build(),
+		];
 	}
 
 	private function canAccessUndefinedProperties(Scope $scope, Expr $node): bool

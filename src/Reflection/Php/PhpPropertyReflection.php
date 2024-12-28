@@ -268,4 +268,34 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 		return $this->setHook;
 	}
 
+	public function isProtectedSet(): bool
+	{
+		if ($this->reflection->isProtectedSet()) {
+			return true;
+		}
+
+		if ($this->isReadOnly()) {
+			return !$this->isPrivate() && !$this->reflection->isPrivateSet();
+		}
+
+		return false;
+	}
+
+	public function isPrivateSet(): bool
+	{
+		if ($this->reflection->isPrivateSet()) {
+			return true;
+		}
+
+		if ($this->reflection->isProtectedSet()) {
+			return false;
+		}
+
+		if ($this->isReadOnly()) {
+			return $this->isPrivate();
+		}
+
+		return false;
+	}
+
 }

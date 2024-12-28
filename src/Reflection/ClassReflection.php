@@ -642,7 +642,7 @@ final class ClassReflection
 				}
 
 				$property = $this->wrapExtendedProperty($extension->getProperty($this, $propertyName));
-				if ($scope->canAccessProperty($property)) {
+				if ($scope->canReadProperty($property)) {
 					return $this->properties[$key] = $property;
 				}
 				$this->properties[$key] = $property;

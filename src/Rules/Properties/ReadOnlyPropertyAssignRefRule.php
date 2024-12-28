@@ -38,7 +38,7 @@ final class ReadOnlyPropertyAssignRefRule implements Rule
 			if ($nativeReflection === null) {
 				continue;
 			}
-			if (!$scope->canAccessProperty($propertyReflection)) {
+			if (!$scope->canWriteProperty($propertyReflection)) {
 				continue;
 			}
 			if (!$nativeReflection->isReadOnly()) {

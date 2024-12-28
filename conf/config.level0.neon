@@ -97,6 +97,7 @@ rules:
 	- PHPStan\Rules\Properties\MissingReadOnlyPropertyAssignRule
 	- PHPStan\Rules\Properties\MissingReadOnlyByPhpDocPropertyAssignRule
 	- PHPStan\Rules\Properties\PropertiesInInterfaceRule
+	- PHPStan\Rules\Properties\PropertyAssignRefRule
 	- PHPStan\Rules\Properties\PropertyAttributesRule
 	- PHPStan\Rules\Properties\PropertyHookAttributesRule
 	- PHPStan\Rules\Properties\PropertyInClassRule

@@ -46,7 +46,7 @@ final class WritingToReadOnlyPropertiesRule implements Rule
 			return [];
 		}
 
-		if (!$scope->canAccessProperty($propertyReflection)) {
+		if (!$scope->canWriteProperty($propertyReflection)) {
 			return [];
 		}
 
