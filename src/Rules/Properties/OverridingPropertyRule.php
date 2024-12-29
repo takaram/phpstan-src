@@ -102,6 +102,18 @@ final class OverridingPropertyRule implements Rule
 			))->identifier('property.visibility')->nonIgnorable()->build();
 		}
 
+		if ($prototype->isFinal()->yes()) {
+			$errors[] = RuleErrorBuilder::message(sprintf(
+				'Property %s::$%s overrides final property %s::$%s.',
+				$classReflection->getDisplayName(),
+				$node->getName(),
+				$prototype->getDeclaringClass()->getDisplayName(),
+				$node->getName(),
+			))->identifier('property.parentPropertyFinal')
+				->nonIgnorable()
+				->build();
+		}
+
 		$typeErrors = [];
 		$nativeType = $node->getNativeType();
 		if ($prototype->hasNativeType()) {

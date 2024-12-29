@@ -234,7 +234,14 @@ final class PhpPropertyReflection implements ExtendedPropertyReflection
 
 	public function isFinal(): TrinaryLogic
 	{
-		return TrinaryLogic::createFromBoolean($this->reflection->isFinal());
+		if ($this->reflection->isFinal()) {
+			return TrinaryLogic::createYes();
+		}
+		if ($this->reflection->isPrivate()) {
+			return TrinaryLogic::createNo();
+		}
+
+		return TrinaryLogic::createFromBoolean($this->isPrivateSet());
 	}
 
 	public function isVirtual(): TrinaryLogic

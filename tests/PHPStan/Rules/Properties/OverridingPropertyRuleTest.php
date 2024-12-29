@@ -5,6 +5,7 @@ namespace PHPStan\Rules\Properties;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 use function sprintf;
+use const PHP_VERSION_ID;
 
 /**
  * @extends RuleTestCase<OverridingPropertyRule>
@@ -169,6 +170,33 @@ class OverridingPropertyRuleTest extends RuleTestCase
 	{
 		$this->reportMaybes = true;
 		$this->analyse([__DIR__ . '/data/bug-7692.php'], []);
+	}
+
+	public function testFinal(): void
+	{
+		if (PHP_VERSION_ID < 80400) {
+			$this->markTestSkipped('Test requires PHP 8.4.');
+		}
+
+		$this->reportMaybes = true;
+		$this->analyse([__DIR__ . '/data/overriding-final-property.php'], [
+			[
+				'Property OverridingFinalProperty\Bar::$a overrides final property OverridingFinalProperty\Foo::$a.',
+				21,
+			],
+			[
+				'Property OverridingFinalProperty\Bar::$b overrides final property OverridingFinalProperty\Foo::$b.',
+				23,
+			],
+			[
+				'Property OverridingFinalProperty\Bar::$c overrides final property OverridingFinalProperty\Foo::$c.',
+				25,
+			],
+			[
+				'Property OverridingFinalProperty\Bar::$d overrides final property OverridingFinalProperty\Foo::$d.',
+				27,
+			],
+		]);
 	}
 
 }
