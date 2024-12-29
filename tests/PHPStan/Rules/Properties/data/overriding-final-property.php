@@ -9,9 +9,9 @@ class Foo
 
 	final protected $b;
 
-	public private(set) $c;
+	public private(set) int $c;
 
-	protected private(set) $d;
+	protected private(set) int $d;
 
 }
 
