@@ -22,8 +22,8 @@ class Bar extends Foo
 
 	public $b;
 
-	public $c;
+	public int $c;
 
-	public $d;
+	public int $d;
 
 }
