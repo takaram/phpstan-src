@@ -13,7 +13,7 @@ use PHPStan\Rules\Rule;
 final class AccessPropertiesInAssignRule implements Rule
 {
 
-	public function __construct(private AccessPropertiesRule $accessPropertiesRule)
+	public function __construct(private AccessPropertiesCheck $check)
 	{
 	}
 
@@ -32,7 +32,7 @@ final class AccessPropertiesInAssignRule implements Rule
 			return [];
 		}
 
-		return $this->accessPropertiesRule->processNode($node->getPropertyFetch(), $scope);
+		return $this->check->check($node->getPropertyFetch(), $scope);
 	}
 
 }
