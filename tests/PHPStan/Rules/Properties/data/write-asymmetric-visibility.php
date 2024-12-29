@@ -71,3 +71,14 @@ function (ReadonlyProps $foo): void {
 	$foo->b = 1;
 	$foo->c = 1;
 };
+
+class ArrayProp
+{
+
+	public private(set) array $a = [];
+
+}
+
+function (ArrayProp $foo): void {
+	$foo->a[] = 1;
+};

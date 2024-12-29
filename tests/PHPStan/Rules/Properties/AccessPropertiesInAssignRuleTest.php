@@ -157,6 +157,10 @@ class AccessPropertiesInAssignRuleTest extends RuleTestCase
 				'Assign to private(set) property WriteAsymmetricVisibility\ReadonlyProps::$c.',
 				72,
 			],
+			[
+				'Assign to private(set) property WriteAsymmetricVisibility\ArrayProp::$a.',
+				83,
+			],
 		]);
 	}
 
