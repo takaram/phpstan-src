@@ -25,7 +25,7 @@ final class ReadOnlyPropertyAssignRefRule implements Rule
 
 	public function processNode(Node $node, Scope $scope): array
 	{
-		if (!$node->expr instanceof Node\Expr\PropertyFetch && !$node->expr instanceof Node\Expr\StaticPropertyFetch) {
+		if (!$node->expr instanceof Node\Expr\PropertyFetch) {
 			return [];
 		}
 
