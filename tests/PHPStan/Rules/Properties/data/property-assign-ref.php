@@ -27,3 +27,17 @@ class Bar
 	}
 
 }
+
+class Baz
+{
+
+	protected $a;
+
+	private $b;
+
+}
+
+function (Baz $b): void {
+	$z = &$b->a;
+	$zz = &$b->b;
+};

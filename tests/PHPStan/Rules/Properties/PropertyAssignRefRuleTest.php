@@ -33,6 +33,14 @@ class PropertyAssignRefRuleTest extends RuleTestCase
 				'Property PropertyAssignRef\Foo::$bar with protected(set) visibility is assigned by reference.',
 				26,
 			],
+			[
+				'Property PropertyAssignRef\Baz::$a with protected visibility is assigned by reference.',
+				41,
+			],
+			[
+				'Property PropertyAssignRef\Baz::$b with private visibility is assigned by reference.',
+				42,
+			],
 		]);
 	}
 
