@@ -95,6 +95,7 @@ lint:
 		--exclude tests/PHPStan/Parser/data/cleaning-property-hooks-after.php \
 		--exclude tests/PHPStan/Rules/Properties/data/existing-classes-property-hooks.php \
 		--exclude tests/PHPStan/Rules/Properties/data/set-property-hook-parameter.php \
+		--exclude tests/PHPStan/Rules/Properties/data/overriding-final-property.php \
 		src tests
 
 cs:
